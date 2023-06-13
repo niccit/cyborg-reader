@@ -62,7 +62,7 @@ storage.mount(vfs, "/sd")
 # --- Audio Set up --- #
 audio = audiobusio.I2SOut(bit_clock=board.D24, word_select=board.D25, data=board.A3)
 # We only have one voice, the format of the wave files needs to be 16-bit PCM, wave files, if stereo
-# need to be merged to mono - 1 channel), the Project Rate(Hz) for the files needs to be 16000,
+# need to be merged to mono - 1 channel, the Project Rate(Hz) for the files needs to be 16000,
 # and all wave files must be Microsoft signed
 mixer = audiomixer.Mixer(voice_count=1, sample_rate=16000, channel_count=1,
                          bits_per_sample=16, samples_signed=True, buffer_size=32768)
@@ -179,7 +179,7 @@ def set_wave_file():
 
 
 # Take an image file and set the display
-# If no book is being read, or the current book is done, display the deafult image
+# If no book is being read, or the current book is done, display the default image
 # Otherwise display the cover of the book
 def set_book_cover(image_file):
     # display group
@@ -251,7 +251,7 @@ def move_to_new_book():
 
 # --- Ebook Handling --- #
 # Get all the book directories
-# directories should lead with a two-digit value (ex; 01)
+# All directories should lead with a two-digit value (ex; 01)
 # We will sort the array and start with the first book
 for filename in os.listdir("/sd/book"):
     books.append("/sd/book/" + filename)
@@ -265,7 +265,7 @@ books.sort()
 # We need this in case the reader loses power
 for filename in os.listdir("/sd"):
     # The reader may have to re-listen to the chapter
-    # This is due to Github issue: https://github.com/adafruit/circuitpython/issues/8055
+    # This is due to GitHub issue: https://github.com/adafruit/circuitpython/issues/8055
     # audiocore.WaveFile does not currently support seek()
     if filename.lower().startswith('chapters') and not filename.lower().startswith('.'):
         chapter_state_file = "/sd/" + filename
@@ -339,7 +339,7 @@ while True:
         print("Button play pressed")
         time.sleep(0.1)
         audio.pause()
-        # Set wave file here so we can handle restarting over at the first book
+        # Set wave file here, so we can handle restarting over at the first book
         set_wave_file()
         pixels[0] = PLAY
         set_book_cover(book_image)
