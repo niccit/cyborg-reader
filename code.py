@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: MIT
 
 # Introducing a one button Ebook reader
-# This Ebook reader is designed specifically for people with dementia, Alzheimer's, or any cognitive impairment
-# that makes working with more complex technologies too challenging
+# This Ebook reader is designed specifically for people who may find working with more complex
+# technologies too challenging
 # One button does everything - Play, Pause, Resume
 # Multiple book directories are supported
 # Ebook reader saves state, currently at the change of a chapter and/or a book
