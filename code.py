@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 
-# Introducing a one button Ebook reader
+# Introducing a one button audible book reader
 # This Ebook reader is designed specifically for people who may find working with more complex
 # technologies too challenging
 # One button does everything - Play, Pause, Resume
@@ -94,6 +94,10 @@ display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=
 # Your needs may vary
 display = ST7789(display_bus, width=240, height=320, rotation=180)
 
+# display group
+primary_display = displayio.Group()
+display.show(primary_display)
+
 # --- Rotary Encoder set up - volume control --- #
 volume_control = seesaw.Seesaw(i2c, addr=0x36)  # default address is 0x36
 encoder = rotaryio.IncrementalEncoder(volume_control)
@@ -182,9 +186,6 @@ def set_wave_file():
 # If no book is being read, or the current book is done, display the default image
 # Otherwise display the cover of the book
 def set_book_cover(image_file):
-    # display group
-    primary_display = displayio.Group()
-    display.show(primary_display)
 
     if image_file is not None:
         book_image_bitmap = displayio.OnDiskBitmap(open(image_file, "rb"))
@@ -249,7 +250,7 @@ def move_to_new_book():
     set_book_chapters(current_book)
 
 
-# --- Ebook Handling --- #
+# --- book Handling --- #
 # Get all the book directories
 # All directories should lead with a two-digit value (ex; 01)
 # We will sort the array and start with the first book
