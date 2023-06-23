@@ -283,6 +283,7 @@ for filename in os.listdir("/sd"):
 # --- Default Image for Display --- #
 
 # File is stored on the board SPI Flash
+# Image by FreePik (https://www.freepik.com/free-vector/hand-drawn-flat-design-stack-books_24372889.htm)
 default_image = "images/begin_reading.bmp"
 
 # --- Set the player up to begin reading --- #
