@@ -13,6 +13,9 @@ battery_width = 73;
 battery_height = 10;
 
 show_all = true;
+show_battery = false;
+show_base = false;
+show_top = false;
 
 if (show_all == true) {
     translate([50, 0, 0])
@@ -23,25 +26,34 @@ if (show_all == true) {
         enclosure_top();
 }
 
-// enclosure_base();
-// battery_pocket();
-// enclosure_top();
+if (show_battery == true) {
+    battery_pocket();
+}
+
+if (show_base == true) {
+    enclosure_base();
+}
+
+if (show_top == true) {
+    enclosure_top();
+}
+
 
 
 module enclosure_base() {
     difference() {
-        cube([case_length, case_width, (case_height)], center=true);
+        cube([case_length + 1, case_width + 1, (case_height)], center=true);
         translate([0, 0, 6])
             cube([(case_length - 1.5), (case_width - 1.5), (case_height + 1)], center=true);
 
         // Pinholes for the battery pocket mounting pins
-        translate([(-case_length / 2) + 70.5, (-case_width / 2) + 29, (-case_height / 2) + 0.5])
+        translate([(-case_length / 2) + 70.5, (-case_width / 2) + 28.5, (-case_height / 2) + 0.5])
             pinhole(r=2, h=5); // from top; uppper left pinhole
-        translate([(case_length / 2) - 12.5, (-case_width / 2) + 29, (-case_height / 2) + 0.5])
+        translate([(case_length / 2) - 12.5, (-case_width / 2) + 28.5, (-case_height / 2) + 0.5])
             pinhole(r=2, h=5); // from top; bottom left pinhole
-        translate([(-case_length / 2) + 70.5, (case_width / 2) - 29, (-case_height / 2) + 0.5])
+        translate([(-case_length / 2) + 70.5, (case_width / 2) - 28.5, (-case_height / 2) + 0.5])
             pinhole(r=2, h=5); // from top; upper right pinhole
-        translate([(case_length / 2) - 12.5, (case_width / 2) - 29, (-case_height / 2) + 0.5])
+        translate([(case_length / 2) - 12.5, (case_width / 2) - 28.5, (-case_height / 2) + 0.5])
             pinhole(r=2, h=5); // from top; bottom right pinhole
 
         // Opening for rotary encoder
@@ -86,19 +98,19 @@ module enclosure_base() {
             bottom_vent();
 
         // side vent
-        translate([(-case_length / 2) - 6, 0, 0])
+        translate([(-case_length / 2) - 5, 0, 0])
             side_vent();
     }
 
 
     // The pinholes where the top will connect
-    translate([(case_length / 2) - 4 - 0.001, (case_width / 2) - 4 - 0.001, (-case_height / 4) + 13.25 - 0.001])
+    translate([(case_length / 2) - 4 - 0.001, (case_width / 2) - 4 - 0.001, (-case_height / 2)  + 25 - 0.001])
         base_top_pinholes();
-    translate([(-case_length / 2) + 4 - 0.001, (case_width / 2) - 4 - 0.001, (-case_height / 4) + 13.25 - 0.001])
+    translate([(-case_length / 2) + 4 - 0.001, (case_width / 2) - 4 - 0.001, (-case_height / 2) + 25 - 0.001])
         base_top_pinholes();
-    translate([(case_length / 2) - 4 - 0.001, (-case_width / 2) + 4 - 0.001, (-case_height / 4) + 13.25 - 0.001])
+    translate([(case_length / 2) - 4 - 0.001, (-case_width / 2) + 4 - 0.001, (-case_height / 2) + 25 - 0.001])
         base_top_pinholes();
-    translate([(-case_length / 2) + 4 - 0.001, (-case_width / 2) + 4 - 0.001, (-case_height / 4) + 13.25 - 0.001])
+    translate([(-case_length / 2) + 4 - 0.001, (-case_width / 2) + 4 - 0.001, (-case_height / 2) + 25 - 0.001])
         base_top_pinholes();
 
 }
@@ -107,23 +119,23 @@ module enclosure_base() {
 // the pocket will snap into the main part of the case and will have mounting holes for the doubler board
 module battery_pocket() {
     difference() {
-       cube([(battery_length), (battery_width), battery_height], center=true);
+       cube([(battery_length + 1), (battery_width + 1), battery_height], center=true);
         translate([0, 0, 1])
-            cube([(battery_length - 1), (battery_width - 1), (battery_height + 1)], center = true);
+            cube([(battery_length - 1), (battery_width - 1), (battery_height) - 2], center = true);
         // mounting holes for the doubler
-        translate([(-battery_length / 2) + 2.5, (-battery_width / 2) + 24.25, (-battery_height + 1)])
+        translate([(-battery_length / 2) + 2.5, (-battery_width / 2) + 24.25, (-battery_height / 2) - 2])
             cylinder(d=3, h=5);
-        translate([(battery_length / 2) - 2.5, (-battery_width / 2) + 24.25, (-battery_height + 1)])
+        translate([(battery_length / 2) - 2.5, (-battery_width / 2) + 24.25, (-battery_height / 2) - 2])
             cylinder(d=3, h=5);
-        translate([(-battery_length / 2) + 2.5, (battery_width / 2) - 3, (-battery_height + 1)])
+        translate([(-battery_length / 2) + 2.5, (battery_width / 2) - 3, (-battery_height / 2) - 2])
             cylinder(d=3, h=5);
-        translate([(battery_length / 2) - 2.5, (battery_width / 2) - 3, (-battery_height + 1)])
+        translate([(battery_length / 2) - 2.5, (battery_width / 2) - 3, (-battery_height / 2) - 2])
             cylinder(d=3, h=5);
 
         // mounting holes for amp
-        translate([(-battery_width / 2) + 18, (-battery_length / 2) - 10, -6])
+        translate([(-battery_width / 2) + 18, (-battery_length / 2) - 10, (-battery_height / 2) - 2])
             cylinder(d=3, h=5);
-        translate([(-battery_width / 2) + 31, (-battery_length / 2) - 10, -6])
+        translate([(-battery_width / 2) + 31, (-battery_length / 2) - 10, (-battery_height / 2) - 2])
             cylinder(d=3, h=5);
 
         // cut out for battery cable
@@ -134,21 +146,25 @@ module battery_pocket() {
 
     // Supports and Pins for attaching to main case
     translate([(-battery_length / 2) + 2.75 - 0.001, (-battery_width / 2) + 10.5 - 0.001, (-battery_height / 2) + 5 - 0.001])
-        cube([4.5, 5, battery_height], center=true);
-        translate([(-battery_length /2) + 2.5 - 0.001, (-battery_width / 2) + 10.5 - 0.001, (battery_height / 2) + 0.001])
+        cube([4.5, 6, battery_height], center=true);
+        translate([(-battery_length /2) + 2 - 0.001, (-battery_width / 2) + 10.5 - 0.001, (battery_height / 2) - 0.001])
             pin(r=2, h=5);
     translate([(battery_length / 2) - 2.75 - 0.001, (-battery_width / 2) + 10.5 - 0.001, (-battery_height / 2) + 5 - 0.001])
-        cube([4.5, 5, battery_height], center=true);
-        translate([(battery_length /2) - 2.5, (-battery_width / 2) + 10.5, (battery_height / 2) + - 0.001])
+        cube([4.5, 6, battery_height], center=true);
+            translate([(battery_length / 2) - 2 - 0.001, (-battery_width / 2) + 10.5, (battery_height / 2) - 0.001])
             pin(r=2, h=5);
     translate([(-battery_length / 2) + 2.75 - 0.001, (battery_width / 2) - 10.5, (-battery_height / 2) + 5 - 0.001])
-        cube([4.5, 5, battery_height], center=true);
-        translate([(-battery_length /2) + 2.5, (battery_width / 2) - 10.5, (battery_height / 2) + - 0.001])
+        cube([4.5, 6, battery_height], center=true);
+        translate([(-battery_length /2) + 2 - 0.001, (battery_width / 2) - 10.5, (battery_height / 2) + - 0.001])
             pin(r=2, h=5);
     translate([(battery_length / 2) - 2.75 - 0.001, (battery_width / 2) - 10.5, (-battery_height / 2) + 5 - 0.001])
-        cube([4.5, 5, battery_height], center=true);
-        translate([(battery_length /2) - 2.5, (battery_width / 2) - 10.5, (battery_height / 2) + - 0.001])
+        cube([4.5, 6, battery_height], center=true);
+        translate([(battery_length /2) - 2 - 0.001, (battery_width / 2) - 10.5, (battery_height / 2) + - 0.001])
         pin(r=2, h=5);
+
+    // Support to stop battery from moving fore and aft
+    translate([10, (-battery_width / 2) + 3, (-battery_height / 2) + 5 - 0.001])
+        cube([5, 5, battery_height], center=true);
 }
 
 module base_top_pinholes() {
@@ -162,7 +178,7 @@ module base_top_pinholes() {
 
 module enclosure_top() {
    difference() {
-       cube([case_length, case_width, 6], center=true);
+       cube([case_length + 1, case_width + 1, 6], center=true);
        translate([0, 0, 1])
             cube([(case_length - 1), (case_width - 1), 7], center=true);
 
