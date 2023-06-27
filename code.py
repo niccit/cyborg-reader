@@ -182,6 +182,15 @@ def set_wave_file():
         sys.exit()
 
 
+# This method will set a transitional audio file to be played
+def set_transitional_wave(file):
+    wav_file = file
+    wav = open(wav_file, "rb")
+    tmp_wave = WaveFile(wav)
+
+    return tmp_wave
+
+
 # Take an image file and set the display
 # If no book is being read, or the current book is done, display the default image
 # Otherwise display the cover of the book
@@ -286,6 +295,13 @@ for filename in os.listdir("/sd"):
 # Image by FreePik (https://www.freepik.com/free-vector/hand-drawn-flat-design-stack-books_24372889.htm)
 default_image = "images/begin_reading.bmp"
 
+# --- Transition audio --- #
+
+# These files are instructional, one plays at startup, one at the end of a book, and one at the end of all books
+welcome_message = "audio_files/Begin_reading.wav"
+next_book = "audio_files/Move_to_next_book.wav"
+books_finished = "audio_files/Books_finished.wav"
+
 # --- Set the player up to begin reading --- #
 
 print("Let's Read!")
@@ -323,6 +339,16 @@ while True:
         mixer.voice[0].level = volume_adjust
         last_encoder_pos = encoder_pos
 
+    # Play welcome instructional message at start up
+#     if PLAY_STATE is False:
+#         tmp_wave = set_transitional_wave(welcome_message)
+#         # Set our audio to use the mixer
+#         audio.play(mixer)
+#         time.sleep(0.1)
+#         audio.pause()
+#         mixer.voice[0].play(tmp_wave, loop=False)
+#         audio.resume()
+
     # Handle the button pushes
     # We're only using one button for simplicity
     # So it has to handle play/pause/resume
@@ -336,7 +362,6 @@ while True:
             pixels[0] = PAUSE
             audio.pause()
     elif button_play.fell and not mixer.playing:
-        # Set our audio to use the mixer
         audio.play(mixer)
         print("Button play pressed")
         time.sleep(0.1)
@@ -372,6 +397,11 @@ while True:
         elif current_chapter > (total_chapters - 1) and not current_book > (total_books - 1):
             print("Yay! You've reached the end of the first book and there's another book to read!")
             audio.pause()
+            tmp_wave = set_transitional_wave(next_book)
+            mixer.voice[0].play(tmp_wave, loop=False)
+            audio.resume()
+            time.sleep(0.1)
+            audio.pause()
             move_to_new_book()
             set_wave_file()
             pixels[0] = PLAY
@@ -383,6 +413,11 @@ while True:
         # Here we do set up to start over from book 1
         else:
             print("Yay! You've listened to all your books, ask for more!")
+            audio.pause()
+            tmp_wave = set_transitional_wave(books_finished)
+            mixer.voice[0].play(tmp_wave, loop=False)
+            audio.resume()
+            time.sleep(0.1)
             audio.stop()
             mixer.voice[0].stop()
             pixels[0] = NEED_BOOK

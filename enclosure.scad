@@ -12,10 +12,10 @@ battery_length = 47;
 battery_width = 73;
 battery_height = 10;
 
-show_all = true;
+show_all = false;
 show_battery = false;
 show_base = false;
-show_top = false;
+show_top = true;
 
 if (show_all == true) {
     translate([50, 0, 0])
@@ -46,16 +46,6 @@ module enclosure_base() {
         translate([0, 0, 6])
             cube([(case_length - 1), (case_width - 1), (case_height + 1)], center=true);
 
-        // Pinholes for the battery pocket mounting pins
-        translate([(-case_length / 2) + 65.5, (-case_width / 2) + 28.5, (-case_height / 2) + 0.5])
-            pinhole(r=2, h=5); // from top; uppper left pinhole
-        translate([(case_length / 2) - 17.5, (-case_width / 2) + 28.5, (-case_height / 2) + 0.5])
-            pinhole(r=2, h=5); // from top; bottom left pinhole
-        translate([(-case_length / 2) + 65.5, (case_width / 2) - 28.5, (-case_height / 2) + 0.5])
-            pinhole(r=2, h=5); // from top; upper right pinhole
-        translate([(case_length / 2) - 17.5, (case_width / 2) - 28.5, (-case_height / 2) + 0.5])
-            pinhole(r=2, h=5); // from top; bottom right pinhole
-
         // Opening for rotary encoder
         rotate([90, 0, 0])
             translate([ (case_width / 2) - 40 , (case_height / 2) - 24, (case_length / 2) - 19 ])
@@ -83,11 +73,11 @@ module enclosure_base() {
 
         // Opening for the slider switch
         translate([(case_length / 2) - 25, (-case_width / 2) , (case_height / 2) - 20])
-            cube([10, 5, 4], center=true);
+            cube([15, 5, 4], center=true);
 
         // Opening for usb charging plug
         translate([(case_length / 2) - 1, (-case_width / 2) + 32.5, (case_height / 2) - 11])
-            cube([5, 11.2, 6.12]);
+            cube([5, 11.2, 6.5]);
 
         // bottom venting
         translate([(case_length / 2) - 57, (-case_width / 2) + 38, (-case_height / 2) - 3])
@@ -116,7 +106,8 @@ module enclosure_base() {
 }
 
 // A slot to hold the battery so it doesn't rattle around in the enclosure
-// the pocket will snap into the main part of the case and will have mounting holes for the doubler board
+// The pocket will be secured in the enclosure using Dash Tabs
+// The pocket also has mounting holes for the doubler and the amp
 module battery_pocket() {
     difference() {
        cube([(battery_length + 1), (battery_width + 1), battery_height], center=true);
@@ -144,33 +135,22 @@ module battery_pocket() {
     }
 
 
-    // Supports and Pins for attaching to main case
+    // Stops to keep the battery in place and to assist in securing pocket to enclosure base
+    // Left and right stops
     translate([(-battery_length / 2) + 2.75 - 0.001, (-battery_width / 2) + 10.5 - 0.001, (-battery_height / 2) + 5 - 0.001])
-        cube([4.5, 6, battery_height], center=true);
-            translate([(-battery_length /2) + 2 - 0.001, (-battery_width / 2) + 10.5 - 0.001, (battery_height / 2) - 0.001])
-            rotated_pin();
+        cube([4.5, 8, battery_height], center=true);
     translate([(battery_length / 2) - 2.75 - 0.001, (-battery_width / 2) + 10.5 - 0.001, (-battery_height / 2) + 5 - 0.001])
-        cube([4.5, 6, battery_height], center=true);
-            translate([(battery_length / 2) - 2 - 0.001, (-battery_width / 2) + 10.5, (battery_height / 2) - 0.001])
-            rotated_pin();
+        cube([4.5, 8, battery_height], center=true);
     translate([(-battery_length / 2) + 2.75 - 0.001, (battery_width / 2) - 10.5, (-battery_height / 2) + 5 - 0.001])
         cube([4.5, 6, battery_height], center=true);
-        translate([(-battery_length /2) + 2 - 0.001, (battery_width / 2) - 10.5, (battery_height / 2) + - 0.001])
-            rotated_pin();
     translate([(battery_length / 2) - 2.75 - 0.001, (battery_width / 2) - 10.5, (-battery_height / 2) + 5 - 0.001])
         cube([4.5, 6, battery_height], center=true);
-        translate([(battery_length /2) - 2 - 0.001, (battery_width / 2) - 10.5, (battery_height / 2) + - 0.001])
-            rotated_pin();
 
-    // Support to stop battery from moving fore and aft
+    // Backward stop
     translate([10, (-battery_width / 2) + 3, (-battery_height / 2) + 5 - 0.001])
         cube([5, 5, battery_height], center=true);
 }
 
-module rotated_pin() {
-    rotate([0, 0, 90])
-        pin(r=2, h=5);
-}
 
 module base_top_pinholes() {
     difference() {
@@ -180,35 +160,33 @@ module base_top_pinholes() {
     }
 }
 
-
 module enclosure_top() {
    difference() {
-       cube([case_length + 3, case_width + 3, 6], center=true);
+       cube([case_length + 3, case_width + 3, 4], center=true);
        translate([0, 0, 1])
-            cube([(case_length - 1), (case_width - 1), 7], center=true);
+            cube([(case_length - 1), (case_width - 1), 5], center=true);
 
        // hole for the display
-       translate([(case_width / 2) - 18, (-case_length / 2) + 55, -3])
-           cube([35.56, 45, 2], center=true);
+       translate([(case_width / 2) - 18, (-case_length / 2) + 56, -2])
+           cube([35.56, 50, 2], center=true);
 
        // display mounting points
-       translate([(case_length / 2) - 50.75, (-case_width / 2) + 11.25, -4])
+       translate([(case_length / 2) - 50.75, (-case_width / 2) + 11.25, -3])
            cylinder(d=3, h=2);
-       translate([(case_length / 2) - 20.25, (-case_width / 2) + 11.25, -4])
+       translate([(case_length / 2) - 20.25, (-case_width / 2) + 11.25, -3])
            cylinder(d=3, h=2);
 
        // cut out for the Kailh key
-       translate([(-case_width / 2) , (case_length / 4) - 22, -3])
+       translate([(-case_width / 2) , (case_length / 4) - 22, -2])
            cube([15, 15, 2], center=true);
 
        // slot for SD card extender
-       translate([(case_width / 2) - 18, (-case_length / 2) + 18, 2.25])
+       translate([(case_width / 2) - 18, (-case_length / 2) + 18, 1.75])
            cube([14, 5, 3], center=true);
 
     }
 
-
-
+    // pins for snapping top onto base
     translate([(-case_length / 2) + 4 - 0.001, (-case_width / 2) + 4.25 - 0.001, 0.5])
         top_pins_left();
     translate([(-case_length / 2) + 4 - 0.001, (case_width / 2) - 4.25 - 0.001, 0.5])
@@ -220,16 +198,15 @@ module enclosure_top() {
 }
 
 
-
 module top_pins_left() {
     cube([8, 8, 5], center=true);
-    translate([0, -0.25, 2 - 0.001])
+    translate([0, -0.25, 1.5 - 0.001])
         pin(r=3, h=8);
 }
 
 module top_pins_right() {
     cube([8, 8, 5], center=true);
-    translate([0, 0.25, 2 - 0.001])
+    translate([0, 0.25, 1.5 - 0.001])
         pin(r=3, h=8);
 }
 
