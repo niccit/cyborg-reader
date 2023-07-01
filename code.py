@@ -237,7 +237,7 @@ def correct_out_of_sync_state(item, book: bool):
             set_current_book(0, True)
     else:
         debug_print("total chapters are " + str(total_chapters))
-        if item > (total_chapters - 1) or not os.stat(chapter_state_file)[6] > 0:
+        if item > total_chapters or not os.stat(chapter_state_file)[6] > 0:
             print("chapters is out of sync, resetting to 0", item, os.stat(chapter_state_file)[6])
             set_current_chapter(0, True)
 
@@ -301,6 +301,7 @@ default_image = "images/begin_reading.bmp"
 welcome_message = "audio_files/Begin_reading.wav"
 next_book = "audio_files/Move_to_next_book.wav"
 books_finished = "audio_files/Books_finished.wav"
+test_file = "audio_files/01-Identity.wav"
 
 # --- Set the player up to begin reading --- #
 
@@ -315,7 +316,6 @@ set_book_chapters(current_book)
 
 # Ensure current chapter state file is not out of sync
 correct_out_of_sync_state(current_chapter, False)
-print("Chapter to read is:", chapters[current_chapter])
 
 # Display the default image
 set_book_cover(default_image)
@@ -326,6 +326,9 @@ pixels[0] = READY
 # Set this to false since we're just starting things up
 # This variable is used to determine if we're actively reading a book
 PLAY_STATE = False
+
+# Play the welcome/instructional message once at start up
+WELCOME = False
 
 while True:
     # Listen for button pushes
@@ -339,15 +342,16 @@ while True:
         mixer.voice[0].level = volume_adjust
         last_encoder_pos = encoder_pos
 
-    # Play welcome instructional message at start up
-#     if PLAY_STATE is False:
-#         tmp_wave = set_transitional_wave(welcome_message)
-#         # Set our audio to use the mixer
-#         audio.play(mixer)
-#         time.sleep(0.1)
-#         audio.pause()
-#         mixer.voice[0].play(tmp_wave, loop=False)
-#         audio.resume()
+    if WELCOME is False and not mixer.playing:
+        time.sleep(0.1)
+        audio.play(mixer)
+        time.sleep(0.1)
+        audio.pause()
+        tmp_wave = set_transitional_wave(welcome_message)
+        mixer.voice[0].play(tmp_wave, loop=False)
+        audio.resume()
+        time.sleep(0.1)
+        WELCOME = True
 
     # Handle the button pushes
     # We're only using one button for simplicity
@@ -362,9 +366,7 @@ while True:
             pixels[0] = PAUSE
             audio.pause()
     elif button_play.fell and not mixer.playing:
-        audio.play(mixer)
         print("Button play pressed")
-        time.sleep(0.1)
         audio.pause()
         # Set wave file here, so we can handle restarting over at the first book
         set_wave_file()
@@ -400,7 +402,7 @@ while True:
             tmp_wave = set_transitional_wave(next_book)
             mixer.voice[0].play(tmp_wave, loop=False)
             audio.resume()
-            time.sleep(0.1)
+            time.sleep(10)
             audio.pause()
             move_to_new_book()
             set_wave_file()
@@ -415,9 +417,11 @@ while True:
             print("Yay! You've listened to all your books, ask for more!")
             audio.pause()
             tmp_wave = set_transitional_wave(books_finished)
+            debug_print("about to play our closing file, telling reader to go get more books!")
+            time.sleep(0.1)
             mixer.voice[0].play(tmp_wave, loop=False)
             audio.resume()
-            time.sleep(0.1)
+            time.sleep(10)
             audio.stop()
             mixer.voice[0].stop()
             pixels[0] = NEED_BOOK
