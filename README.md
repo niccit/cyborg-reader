@@ -1,5 +1,7 @@
 # cyborg-reader
 
+![Simple Audio Book Reader](images/finished_book_reader_for-web.jpg)
+
 Circuitpython code for a simple to use Ebook reader
 
 ## Credits
