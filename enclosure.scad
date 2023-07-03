@@ -202,7 +202,7 @@ module enclosure_top() {
            cylinder(d=3, h=2);
 
        // cut out for the Kailh key
-       translate([(-case_width / 2) , (case_length / 4) - 22, -1])
+       translate([(-case_width / 2) - 0.25, (case_length / 4) - 22.25, -1])
            cube([20, 20, 3], center=true);
 
        // slot for SD card extender
