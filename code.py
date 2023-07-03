@@ -35,7 +35,7 @@ i2c = board.I2C()
 # --- Global Variables --- #
 
 # Set this to true and put any testing specific print statements in the debugging block
-DEBUG = True
+DEBUG = False
 
 # The wave file we will play
 # Setting to none so that we can handle the error if
@@ -67,7 +67,7 @@ audio = audiobusio.I2SOut(bit_clock=board.D24, word_select=board.D25, data=board
 mixer = audiomixer.Mixer(voice_count=1, sample_rate=16000, channel_count=1,
                          bits_per_sample=16, samples_signed=True, buffer_size=32768)
 # Default volume level
-mixer.voice[0].level = 0.15
+mixer.voice[0].level = 0.05
 
 # ---- Play/Pause/Resume Key set up --- #
 button_play_in = digitalio.DigitalInOut(board.D5)
@@ -259,6 +259,22 @@ def move_to_new_book():
     set_book_chapters(current_book)
 
 
+# Play one of the three transitional messages.
+# Welcome message - instructions on how to start listening
+# Next book - message at end of book before moving onto the next book
+# End of books - message to let reader know all books have been read and to get more, also how they can start over at
+# book one if they want
+def play_transitional_messages(message):
+    time.sleep(0.1)
+    audio.play(mixer)
+    time.sleep(0.1)
+    audio.pause()
+    tmp_wave = set_transitional_wave(message)
+    mixer.voice[0].play(tmp_wave, loop=False)
+    audio.resume()
+    time.sleep(0.1)
+
+
 # --- book Handling --- #
 # Get all the book directories
 # All directories should lead with a two-digit value (ex; 01)
@@ -301,7 +317,6 @@ default_image = "images/begin_reading.bmp"
 welcome_message = "audio_files/Begin_reading.wav"
 next_book = "audio_files/Move_to_next_book.wav"
 books_finished = "audio_files/Books_finished.wav"
-test_file = "audio_files/01-Identity.wav"
 
 # --- Set the player up to begin reading --- #
 
@@ -342,16 +357,10 @@ while True:
         mixer.voice[0].level = volume_adjust
         last_encoder_pos = encoder_pos
 
+    # Play a small message at start up to let the listener know to press the button to start listening to their book
     if WELCOME is False and not mixer.playing:
-        time.sleep(0.1)
-        audio.play(mixer)
-        time.sleep(0.1)
-        audio.pause()
-        tmp_wave = set_transitional_wave(welcome_message)
-        mixer.voice[0].play(tmp_wave, loop=False)
-        audio.resume()
-        time.sleep(0.1)
-        WELCOME = True
+        play_transitional_messages(welcome_message)
+        WELCOME = True  # Set this to true so we don't do this again until the reader is restarted
 
     # Handle the button pushes
     # We're only using one button for simplicity
@@ -368,7 +377,6 @@ while True:
     elif button_play.fell and not mixer.playing:
         print("Button play pressed")
         audio.pause()
-        # Set wave file here, so we can handle restarting over at the first book
         set_wave_file()
         pixels[0] = PLAY
         set_book_cover(book_image)
@@ -382,26 +390,20 @@ while True:
     # So once we start playing a book we set the PLAY_STATE to true
     if PLAY_STATE is True and not mixer.playing:
         set_current_chapter(current_chapter, False)
-        # In the event we are reading more chapters in the same book we preserve that book ID
-        tmp_book = current_book
+        tmp_book = current_book  # In the event we are reading more chapters in the same book we preserve that book ID
         set_current_book(current_book, False)
-
         # There are more chapters to read in the current book
         if not current_chapter > (total_chapters - 1):
             print("moving to next chapter")
             audio.pause()
-            # reset current book to the proper active book
-            set_current_book(tmp_book, True)
+            set_current_book(tmp_book, True)  # reset current book to the proper active book
             set_wave_file()
             mixer.voice[0].play(wave, loop=False)
             audio.resume()
         # All the chapters are read but there is another book to read
         elif current_chapter > (total_chapters - 1) and not current_book > (total_books - 1):
             print("Yay! You've reached the end of the first book and there's another book to read!")
-            audio.pause()
-            tmp_wave = set_transitional_wave(next_book)
-            mixer.voice[0].play(tmp_wave, loop=False)
-            audio.resume()
+            play_transitional_messages(next_book)
             time.sleep(10)
             audio.pause()
             move_to_new_book()
@@ -412,15 +414,11 @@ while True:
             mixer.voice[0].play(wave, loop=False)
             audio.resume()
         # All the chapters in all the books have been read
-        # Here we do set up to start over from book 1
+        # Here we do set up to start over from the first book
         else:
             print("Yay! You've listened to all your books, ask for more!")
             audio.pause()
-            tmp_wave = set_transitional_wave(books_finished)
-            debug_print("about to play our closing file, telling reader to go get more books!")
-            time.sleep(0.1)
-            mixer.voice[0].play(tmp_wave, loop=False)
-            audio.resume()
+            play_transitional_messages(books_finished)
             time.sleep(10)
             audio.stop()
             mixer.voice[0].stop()
